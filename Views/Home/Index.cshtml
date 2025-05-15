@@ -1,0 +1,323 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<h2>Quill Editor</h2>
+
+<form method="post" action="/Home/Save">
+    <!-- Quill toolbar -->
+    <div id="toolbar">
+        <span class="ql-formats" >
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="fontDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Select Font
+                </button>
+                <div class="dropdown-menu" aria-labelledby="fontDropdown" id="fontMenu">
+                    <a class="dropdown-item" href="#" data-font="arial">Arial</a>
+                    <a class="dropdown-item" href="#" data-font="times-new-roman">Times New Roman</a>
+                    <a class="dropdown-item" href="#" data-font="courier-new">Courier New</a>
+                    <a class="dropdown-item" href="#" data-font="roboto">Roboto</a>
+                    <a class="dropdown-item" href="#" data-font="georgia">Georgia</a>
+                    <a class="dropdown-item" href="#" data-font="impact">Impact</a>
+                </div>
+            </div>
+        </span>
+
+        <!-- Sizes -->
+
+        <span class="ql-formats">
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="fontSizeDropdown" data-bs-toggle="dropdown" aria-expanded="false" >
+                    Font Size
+                </button>
+                <div class="dropdown-menu" aria-labelledby="fontSizeDropdown" id="fontSizeMenu">
+                    <!-- Dynamically create items -->
+                </div>
+            </div>
+        </span>
+        <span class="ql-formats">
+            <div class="dropdown d-inline-block">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="spacingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Spacing
+                </button>
+                <div class="dropdown-menu" aria-labelledby="spacingDropdown" id="spacingMenu">
+                    <!-- Dynamically created -->
+                </div>
+            </div>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-bold"></button>
+            <button class="ql-italic"></button>
+            <button class="ql-underline"></button>
+            <button class="ql-strike"></button>
+        </span>
+        <span class="ql-formats">
+            <select class="ql-color"></select>
+            <select class="ql-background"></select>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-script" value="sub"></button>
+            <button class="ql-script" value="super"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-header" value="1"></button>
+            <button class="ql-header" value="2"></button>
+            <button class="ql-blockquote"></button>
+            <button class="ql-code-block"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-list" value="ordered"></button>
+            <button class="ql-list" value="bullet"></button>
+            <button class="ql-indent" value="-1"></button>
+            <button class="ql-indent" value="+1"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-align" value=""></button>
+            <button class="ql-align" value="center"></button>
+            <button class="ql-align" value="right"></button>
+            <button class="ql-align" value="justify"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-link"></button>
+            <button class="ql-image"></button>
+            <button class="ql-video"></button>
+        </span>
+        <span class="ql-formats">
+            <button class="ql-clean"></button>
+        </span>
+        <span class="ql-formats">
+            <button type="button" id="toggle-controls" style="margin-bottom:10px">¶</button>
+        </span>
+    </div>
+
+
+    <!-- Quill editor -->
+    <div class="ruler">
+        Left Margin:
+        <input type="range" id="leftMargin" min="0" max="200" value="50">
+        Right Margin:
+        <input type="range" id="rightMargin" min="0" max="200" value="50">
+    </div>
+
+    <div id="editor" style="height: 300px;"></div>
+
+    <!-- Hidden input to submit HTML -->
+    <input type="hidden" name="htmlContent" id="htmlContent" />
+
+    <br />
+    <button id="motherfucker" type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+    <script>
+
+        const quill = new Quill('#editor', {
+            theme: 'snow',
+            modules: {
+                toolbar: '#toolbar',  // or false if you don’t want toolbar
+                keyboard: {
+                    bindings: {
+   
+                        customEnter: {
+                            key: 13,
+                            handler: function (range) {
+                                this.quill.insertText(range.index, '\n');
+                                this.quill.setSelection(range.index + 1);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+
+        document.getElementById('leftMargin').addEventListener('input', function () {
+            document.querySelector('.ql-editor').style.paddingLeft = this.value + 'px';
+        });
+
+        document.getElementById('rightMargin').addEventListener('input', function () {
+            document.querySelector('.ql-editor').style.paddingRight = this.value + 'px';
+        });
+
+        function cleanQuillHtmlUniversal(quillHtml) {
+            const div = document.createElement('div');
+            div.innerHTML = quillHtml;
+
+            // Font map
+            const fontMap = {
+                'ql-font-arial': 'Arial, sans-serif',
+                'ql-font-times-new-roman': 'Times New Roman, serif',
+                'ql-font-courier-new': 'Courier New, monospace',
+                'ql-font-roboto': 'Roboto, sans-serif',
+                'ql-font-georgia': 'Georgia, serif',
+                'ql-font-impact': 'Impact, fantasy'
+            };
+
+            // Alignment map
+            const alignMap = {
+                'ql-align-center': 'center',
+                'ql-align-right': 'right',
+                'ql-align-justify': 'justify',
+                'ql-align-left': 'left' // Default is left, but we'll include it to clean
+            };
+
+            // Handle fonts
+            Object.keys(fontMap).forEach(cls => {
+                div.querySelectorAll(`.${cls}`).forEach(el => {
+                    el.style.fontFamily = fontMap[cls];
+                    el.classList.remove(cls);
+                });
+            });
+
+            // Handle alignments
+            Object.keys(alignMap).forEach(cls => {
+                div.querySelectorAll(`.${cls}`).forEach(el => {
+                    el.style.textAlign = alignMap[cls];
+                    el.classList.remove(cls);
+                });
+            });
+            div.querySelectorAll('[class]').forEach(el => {
+                if (el.getAttribute('class') === '') {
+                    el.removeAttribute('class');
+                }
+            });
+
+            // Optional: Clean all remaining ql- classes (like ql-size, ql-direction, etc.)
+            div.querySelectorAll('[class*="ql-"]').forEach(el => {
+                el.removeAttribute('class');
+            });
+
+            return div.innerHTML;
+        }
+
+
+
+        document.querySelector('form').onsubmit = function () {
+            const html = cleanQuillHtmlUniversal(quill.root.innerHTML);
+            document.getElementById('htmlContent').value = html;
+        };
+
+        var fontSizeMenu = document.getElementById('fontSizeMenu');
+        for (var i = 1; i <= 40; i++) {
+            var item = document.createElement('a');
+            item.classList.add('dropdown-item');
+            item.href = "#";
+            item.dataset.size = i + 'px';
+            item.textContent = i;
+            fontSizeMenu.appendChild(item);
+        }
+        var spacingMenu = document.getElementById('spacingMenu');
+        for (var i = 0; i <= 40; i++) {
+            var item = document.createElement('a');
+            item.classList.add('dropdown-item');
+            item.href = "#";
+            item.dataset.spacing = i ;
+            item.textContent = i ;
+            spacingMenu.appendChild(item);
+        }
+
+        document.querySelectorAll('#fontSizeMenu .dropdown-item').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                var size = this.dataset.size;
+                quill.format('size', size);
+                const range = quill.getSelection();
+                if (!range) return; // No selection
+
+                const editor = quill.root; // Quill's editor container
+
+                // Get all li elements in editor
+                const allLis = editor.querySelectorAll('li');
+
+                // Create a DOM Range from the Quill selection
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+
+                // Get start and end leaf nodes
+                const [startLeaf] = quill.getLeaf(range.index);
+                const [endLeaf] = quill.getLeaf(range.index + range.length);
+
+                const domRange = document.createRange();
+                domRange.setStartBefore(startLeaf.domNode);
+                domRange.setEndAfter(endLeaf.domNode);
+
+                // Apply font size to all li that intersect the selection range
+                allLis.forEach(li => {
+                    const liRange = document.createRange();
+                    liRange.selectNodeContents(li);
+                    // Check if li overlaps selection range
+                    if (
+                        domRange.compareBoundaryPoints(Range.END_TO_START, liRange) < 0 &&
+                        domRange.compareBoundaryPoints(Range.START_TO_END, liRange) > 0
+                    ) {
+                        li.style.fontSize = size;
+                    }
+                });
+                document.getElementById('fontSizeDropdown').textContent = `Font Size: ${this.textContent}`;
+            });
+        });
+
+        // Register custom sizes in Quill (optional but recommended for consistency)
+        var Size = Quill.import('attributors/style/size');
+        Size.whitelist = Array.from({ length: 40 }, (_, i) => (i + 1) + 'px');
+        Quill.register(Size, true);
+
+        document.querySelectorAll('#fontMenu .dropdown-item').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                e.preventDefault();
+                var font = this.dataset.font;
+                quill.format('font', font);
+                document.getElementById('fontDropdown').textContent = this.textContent;
+            });
+        });
+
+        // Register custom fonts in Quill (important)
+        var Font = Quill.import('formats/font');
+        Font.whitelist = ['arial', 'times-new-roman', 'courier-new', 'roboto', 'georgia', 'impact'];
+        Quill.register(Font, true);
+    </script>
+    <script>
+        document.querySelectorAll('#spacingMenu .dropdown-item').forEach(function (item) {
+            item.addEventListener('click', function (e) {
+                document.getElementById('spacingDropdown').textContent = `Paragraph: ${this.dataset.spacing}`;
+
+                const spacing = this.dataset.spacing + 'px';
+                
+                console.log(spacing)
+
+                const range = quill.getSelection();
+
+                if (range) {
+                    // Get all lines (blocks) within the selection
+                    const [startLine, startOffset] = quill.getLine(range.index);
+                    const [endLine, endOffset] = quill.getLine(range.index + range.length);
+
+                    let currentIndex = quill.getIndex(startLine);
+                    const endIndex = quill.getIndex(endLine);
+                    console.log(currentIndex, endIndex)
+                    // Loop through all lines in the selection
+                    while (currentIndex <= endIndex) {
+                        const [line, offset] = quill.getLine(currentIndex);
+                        if (line && line.domNode) {
+                            line.domNode.style.marginBottom = spacing;
+                            console.log('line',line)
+                        }
+                        currentIndex = quill.getIndex(line) + line.length();
+                    }
+                } else {
+                    alert('Please select text or paragraphs to apply spacing.');
+                }
+            });
+        });
+
+
+    </script>
+    <script>
+        const toggleBtn = document.getElementById('toggle-controls');
+        toggleBtn.addEventListener('click', () => {
+            const editor = document.querySelector('.ql-editor');
+            editor.classList.toggle('show-paragraph-marks');
+        });
+    </script>
+}
