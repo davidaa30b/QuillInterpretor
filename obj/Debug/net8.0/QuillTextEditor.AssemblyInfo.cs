@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("QuillTextEditor")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5f46d8735d337c78b51051f782988f53c4317965")]
 [assembly: System.Reflection.AssemblyProductAttribute("QuillTextEditor")]
 [assembly: System.Reflection.AssemblyTitleAttribute("QuillTextEditor")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

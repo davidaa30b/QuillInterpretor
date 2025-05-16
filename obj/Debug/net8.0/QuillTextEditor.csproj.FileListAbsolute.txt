@@ -49,3 +49,4 @@ C:\Users\Sogodi97\source\repos\QuillTextEditor\bin\Debug\net8.0\Newtonsoft.Json.
 C:\Users\Sogodi97\source\repos\QuillTextEditor\bin\Debug\net8.0\BouncyCastle.Cryptography.dll
 C:\Users\Sogodi97\source\repos\QuillTextEditor\bin\Debug\net8.0\itext.bouncy-castle-adapter.dll
 C:\Users\Sogodi97\source\repos\QuillTextEditor\bin\Debug\net8.0\HtmlAgilityPack.dll
+C:\Users\Sogodi97\source\repos\QuillTextEditor\obj\Debug\net8.0\QuillTextEditor.sourcelink.json

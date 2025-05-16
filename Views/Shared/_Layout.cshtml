@@ -15,19 +15,34 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/QuillTryOut.styles.css" asp-append-version="true" />
     <style>
+        .space-dot {
+            visibility: hidden;
+            color: #aaa;
+        }
+
+        .show-paragraph-marks .space-dot {
+            visibility: visible;
+        }
+
         .ql-editor p {
             position: relative;
         }
 
-            .ql-editor p::after {
-                content: '¶';
-                color: gray;
-                user-select: none;
-                pointer-events: none;
-                visibility: hidden; /* hidden by default */
-                margin-left: 2px;
-            }
-
+        .ql-editor p > br:only-child {
+            display: none;
+        }
+        
+        .ql-editor p::after {
+            display: inline; /* inline default, but explicitly set */
+            vertical-align: baseline; /* aligns it with the text */
+            content: '¶';
+            color: gray;
+            user-select: none;
+            pointer-events: none;
+            visibility: hidden; /* hidden by default */
+            margin-left: 2px;
+        }
+        
         .ql-editor.show-paragraph-marks p::after {
             visibility: visible; /* show on toggle */
         }
