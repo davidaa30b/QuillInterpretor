@@ -93,16 +93,16 @@ namespace QuillTextEditor.Controllers
                     }
                 }
             }
-            var spaceDotNodes = doc.DocumentNode.SelectNodes("//span[contains(@class, 'space-dot')]");
-            if (spaceDotNodes != null)
-            {
-                foreach (var span in spaceDotNodes)
-                {
-                    // Replace the entire <span> with a text node containing a space
-                    var spaceTextNode = doc.CreateTextNode("\u00A0");
-                    span.ParentNode.ReplaceChild(spaceTextNode, span);
-                }
-            }
+            //var spaceDotNodes = doc.DocumentNode.SelectNodes("//span[contains(@class, 'space-dot')]");
+            //if (spaceDotNodes != null)
+            //{
+            //    foreach (var span in spaceDotNodes)
+            //    {
+            //        // Replace the entire <span> with a text node containing a space
+            //        var spaceTextNode = doc.CreateTextNode("\u00A0");
+            //        span.ParentNode.ReplaceChild(spaceTextNode, span);
+            //    }
+            //}
 
 
             return doc.DocumentNode.OuterHtml;

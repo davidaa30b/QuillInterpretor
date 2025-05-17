@@ -6,19 +6,21 @@
 
 <form method="post" action="/Home/Save">
     <!-- Quill toolbar -->
-    <div id="toolbar">
+    <div id="toolbar" style="width:750px">
         <span class="ql-formats" >
             <div class="dropdown d-inline-block">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="fontDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Select Font
+                <button style="font-size: 13px;" class="btn btn-secondary dropdown-toggle" type="button" id="fontDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <strong>
+                        Select Font
+                    </strong>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="fontDropdown" id="fontMenu">
-                    <a class="dropdown-item" href="#" data-font="arial">Arial</a>
-                    <a class="dropdown-item" href="#" data-font="times-new-roman">Times New Roman</a>
-                    <a class="dropdown-item" href="#" data-font="courier-new">Courier New</a>
-                    <a class="dropdown-item" href="#" data-font="roboto">Roboto</a>
-                    <a class="dropdown-item" href="#" data-font="georgia">Georgia</a>
-                    <a class="dropdown-item" href="#" data-font="impact">Impact</a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="arial"><strong>Arial</strong></a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="times-new-roman"><strong>Times New Roman</strong></a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="courier-new"><strong>Courier New</strong></a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="roboto"><strong>Roboto</strong></a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="georgia"><strong>Georgia</strong></a>
+                    <a style="font-size: 13px;" class="dropdown-item" href="#" data-font="impact"><strong>Impact</strong></a>
                 </div>
             </div>
         </span>
@@ -27,8 +29,10 @@
 
         <span class="ql-formats">
             <div class="dropdown d-inline-block">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="fontSizeDropdown" data-bs-toggle="dropdown" aria-expanded="false" >
-                    Font Size
+                <button style="font-size: 13px;" class="btn btn-secondary dropdown-toggle" type="button" id="fontSizeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <strong>
+                        Font Size
+                    </strong>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="fontSizeDropdown" id="fontSizeMenu">
                     <!-- Dynamically create items -->
@@ -37,8 +41,10 @@
         </span>
         <span class="ql-formats">
             <div class="dropdown d-inline-block">
-                <button class="btn btn-secondary dropdown-toggle" type="button" id="spacingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    Spacing
+                <button style="font-size: 13px;" class="btn btn-secondary dropdown-toggle" type="button" id="spacingDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <strong>
+                        Spacing
+                        </strong>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="spacingDropdown" id="spacingMenu">
                     <!-- Dynamically created -->
@@ -99,7 +105,7 @@
         <input type="range" id="rightMargin" min="0" max="200" value="50">
     </div>
 
-    <div id="editor" style="height: 300px;"></div>
+    <div id="editor" style="height: 350px;width:750px"></div>
 
     <!-- Hidden input to submit HTML -->
     <input type="hidden" name="htmlContent" id="htmlContent" />
@@ -110,45 +116,76 @@
 
 @section Scripts {
     <script>
-        const Embed = Quill.import('blots/embed');
+        // const Embed = Quill.import('blots/embed');
 
-        class SpaceDotBlot extends Embed {
-            static create() {
-                const node = super.create();
-                node.textContent = '·';
-                return node;
-            }
-        }
+        // class SpaceDotBlot extends Embed {
+        //     static create() {
+        //         const node = super.create();
+        //         node.textContent = '·';
+        //         return node;
+        //     }
+        // }
 
-        SpaceDotBlot.blotName = 'spaceDot';
-        SpaceDotBlot.tagName = 'span';
-        SpaceDotBlot.className = 'space-dot';
+        // SpaceDotBlot.blotName = 'spaceDot';
+        // SpaceDotBlot.tagName = 'span';
+        // SpaceDotBlot.className = 'space-dot';
 
-        Quill.register(SpaceDotBlot);
+        // Quill.register(SpaceDotBlot);
 
         const quill = new Quill('#editor', {
             theme: 'snow',
             modules: {
                 toolbar: '#toolbar',
-                keyboard:{
+                keyboard: {
                     bindings: {
-                        spaceDot: {
+                        spacePreserve: {
                             key: ' ',
                             handler: function (range, context) {
-                                // Insert the SpaceDotBlot at current cursor
-                                quill.insertEmbed(range.index, 'spaceDot', true, Quill.sources.USER);
-                                // Move cursor forward
-                                quill.setSelection(range.index + 2, Quill.sources.SILENT);
-
-                                // Prevent default space
-                                return false;
+                             quill.insertText(range.index, ' ', Quill.sources.USER);
+                             quill.setSelection(range.index + 1, Quill.sources.SILENT);
+                                return false; // Prevent default space
+                            }
+                        },
+                        tabPreserve: {
+                            key: 'Tab', // Tab key code
+                            handler: function (range, context) {
+                                quill.insertText(range.index, '    ', Quill.sources.USER);
+                                quill.setSelection(range.index + 4, Quill.sources.SILENT);
+                                return false; // Prevent default tab behavior
                             }
                         }
                     }
                 }
-               
             }
         });
+        document.getElementById('editor').addEventListener('keydown', function (e) {
+            if (e.key === 'Tab') {
+                e.preventDefault();  // stop browser tabbing out
+                const range = quill.getSelection();
+                if (range) {
+                    quill.insertText(range.index, '\u00A0\u00A0\u00A0\u00A0', Quill.sources.USER);
+                    quill.setSelection(range.index + 4, Quill.sources.SILENT);
+                }
+            }
+        });
+        // quill.clipboard.addMatcher(Node.TEXT_NODE, function(node, delta) {
+        //   // This matcher runs on pasted text nodes
+
+        //   let ops = [];
+
+        //   node.data.split('').forEach(char => {
+        //     if (char === ' ') {
+        //       // For each space, insert a space wrapped in a span blot (or embed)
+        //       ops.push({ insert: { spaceDot: true } }); // if you have a custom blot named 'spaceDot'
+        //     } else {
+        //       // Insert normal characters as-is
+        //       ops.push({ insert: char });
+        //     }
+        //   });
+
+        //   delta.ops = ops;
+        //   return delta;
+        // });
 
         const paragraph = quill.root.querySelector('p');
         if (paragraph) {
@@ -225,12 +262,18 @@
         };
 
         var fontSizeMenu = document.getElementById('fontSizeMenu');
-        for (var i = 1; i <= 40; i++) {
+        for (var i = 6; i <= 40; i++) {
             var item = document.createElement('a');
             item.classList.add('dropdown-item');
             item.href = "#";
             item.dataset.size = i + 'px';
             item.textContent = i;
+            if(i<=9){
+               item.style.fontSize = 9 + 'px';
+            }
+            else{
+               item.style.fontSize = i + 'px';
+            }
             fontSizeMenu.appendChild(item);
         }
         var spacingMenu = document.getElementById('spacingMenu');
@@ -240,6 +283,8 @@
             item.href = "#";
             item.dataset.spacing = i ;
             item.textContent = i ;
+            item.style.fontSize = 13 + 'px';
+
             spacingMenu.appendChild(item);
         }
 
